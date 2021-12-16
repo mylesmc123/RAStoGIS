@@ -471,37 +471,53 @@ with open(os.path.join(tempDir, "test_polygon_all_data_buffer_dissolved" + '.prj
 #-----------------------------Loop through and get XS Polylines and Results-----------------------
 #*************************************************************************************************
 def get_XS_names (hf):
-    dfXS_geo = hf['Geometry']['Cross Sections']['Attributes']
-    dataset = dfXS_geo
-    # print (dataset)
-    # data_list = np.zeros([1, ], dtype='float64')
-    data_list = np.array(dataset).tolist()
-    return data_list
+    try:
+        dfXS_geo = hf['Geometry']['Cross Sections']['Attributes']
+        dataset = dfXS_geo
+        # print (dataset)
+        # data_list = np.zeros([1, ], dtype='float64')
+        data_list = np.array(dataset).tolist()
+        print ("hf['Geometry']['Cross Sections']['Attributes']" + " does not exist")
+        return data_list
+    except:
+        return None
 
 def get_XS_polyline_info (hf):
-    dfXS_geo = hf['Geometry']['Cross Sections']['Polyline Info']
-    dataset = dfXS_geo
-    # print (dataset)
-    # data_list = np.zeros([1, ], dtype='float64')
-    data_list = np.array(dataset).tolist()
-    return data_list
+    try:
+        dfXS_geo = hf['Geometry']['Cross Sections']['Polyline Info']
+        dataset = dfXS_geo
+        # print (dataset)
+        # data_list = np.zeros([1, ], dtype='float64')
+        data_list = np.array(dataset).tolist()
+        print ("hf['Geometry']['Cross Sections']['Polyline Info']" + " does not exist")
+        return data_list
+    except:
+        return None
 
 def get_XS_polyline_points (hf):
-    dfXS_geo = hf['Geometry']['Cross Sections']['Polyline Points']
-    dataset = dfXS_geo
-    # print (dataset)
-    # data_list = np.zeros([1, ], dtype='float64')
-    data_list = np.array(dataset).tolist()
-    return data_list
+    try:
+        dfXS_geo = hf['Geometry']['Cross Sections']['Polyline Points']
+        dataset = dfXS_geo
+        # print (dataset)
+        # data_list = np.zeros([1, ], dtype='float64')
+        data_list = np.array(dataset).tolist()
+        print ("hf['Geometry']['Cross Sections']['Polyline Points']" + " does not exist")
+        return data_list
+    except:
+        return None
 
 def get_XS_wse_results (hf):
-    dfXS_results = hf['Results']['Unsteady']['Output']['Output Blocks'] \
-        ['Base Output']['Unsteady Time Series']['Cross Sections']['Water Surface']
-    dataset = dfXS_results
-    # print (dataset)
-    # data_list = np.zeros([1, ], dtype='float64')
-    data_list = np.array(dataset).tolist()
-    return data_list
+    try:
+        dfXS_results = hf['Results']['Unsteady']['Output']['Output Blocks'] \
+            ['Base Output']['Unsteady Time Series']['Cross Sections']['Water Surface']
+        dataset = dfXS_results
+        # print (dataset)
+        # data_list = np.zeros([1, ], dtype='float64')
+        data_list = np.array(dataset).tolist()
+        print ("hf['Results']['Unsteady']['Output']['Output Blocks']['Base Output']['Unsteady Time Series']['Cross Sections']['Water Surface']" + " does not exist")
+        return data_list
+    except:
+        return None
 
 #-------------------------------------------------------------------------------------
 #--------------------Get XS data from HDF file------------------------------------------
