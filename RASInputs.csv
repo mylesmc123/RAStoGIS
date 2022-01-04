@@ -1,0 +1,9 @@
+SLaMM Inputs Required:
+
+Plan, HurricaneName ForecastTime, Met Model
+Geometry, SLaMM_2021_2D5
+Unsteady Flow, Storm2D4, Any additional Calibrations
+Boundary Condition Stage/Flow, Gulf, Atchafalaya, Mississippi
+Initial Elevation, WCC, IHNC
+Gridded Meteorological Data, Precipitation, Wind Speed, Wind Direction
+Observed Data, River Gages (USGS NOAA CRMA USACE)

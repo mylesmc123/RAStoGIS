@@ -317,7 +317,7 @@ for curr_2DArea in list_of_2DAreas:
                             if next_facept == face_facept_index[potential_face][1]:
                                 next_is_first = False
                                 curr_face_index = face_index
-                                print("found face")
+                                # print("found face")
                                 break
 
                         if next_facept == face_facept_index[face_index][0]:
@@ -325,7 +325,7 @@ for curr_2DArea in list_of_2DAreas:
                             if curr_facept == face_facept_index[potential_face][1]:
                                 next_is_first = True
                                 curr_face_index = face_index
-                                print("found face")
+                                # print("found face")
                                 break
 
                         face_index +=1
@@ -338,7 +338,7 @@ for curr_2DArea in list_of_2DAreas:
 
                     extra_perimeter_xy_pts = []
 
-                    print("...adding perimeter pts, for face %s" % curr_face_index )
+                    # print("...adding perimeter pts, for face %s" % curr_face_index )
                     while perimeter_pt_index <= perimeter_end_pt:
                         # polygon.append(face_perimeter_values[perimeter_pt_index])
                         extra_perimeter_xy_pts.append(face_perimeter_values[perimeter_pt_index])
@@ -426,45 +426,45 @@ with open(os.path.join(tempDir,'test_polygon_all_data_buffer.prj'), 'w') as f:
     f.close()
 
 #*******************************Dissolve final Polygon*******************************************
-print("Dissolving 2D buffered polygons...")
+# print("Dissolving 2D buffered polygons...")
 
-def dissolve_polygon(input_shp, out_file):
-    ds = ogr.Open(input_shp, 0)
-    layer = ds.GetLayer()
-    print(layer.GetGeomType())
-    # -> polygons
-    # empty geometry
-    union_poly = ogr.Geometry(ogr.wkbPolygon)
-    # make the union of polygons
-    for feature in layer:
-        geom = feature.GetGeometryRef()
-        union_poly = union_poly.Union(geom)
+# def dissolve_polygon(input_shp, out_file):
+#     ds = ogr.Open(input_shp, 0)
+#     layer = ds.GetLayer()
+#     print(layer.GetGeomType())
+#     # -> polygons
+#     # empty geometry
+#     union_poly = ogr.Geometry(ogr.wkbPolygon)
+#     # make the union of polygons
+#     for feature in layer:
+#         geom = feature.GetGeometryRef()
+#         union_poly = union_poly.Union(geom)
 
-    # print (union_poly)
+#     # print (union_poly)
 
-    driver = ogr.GetDriverByName('ESRI Shapefile')
-    outDataSource = driver.CreateDataSource(out_file)
-    srs = layer.GetSpatialRef()
-    outLayer = outDataSource.CreateLayer('', srs, ogr.wkbPolygon)
-    featureDefn = outLayer.GetLayerDefn()
-    outFeature = ogr.Feature(featureDefn)
-    outFeature.SetGeometry(union_poly)
+#     driver = ogr.GetDriverByName('ESRI Shapefile')
+#     outDataSource = driver.CreateDataSource(out_file)
+#     srs = layer.GetSpatialRef()
+#     outLayer = outDataSource.CreateLayer('', srs, ogr.wkbPolygon)
+#     featureDefn = outLayer.GetLayerDefn()
+#     outFeature = ogr.Feature(featureDefn)
+#     outFeature.SetGeometry(union_poly)
 
-    outLayer.CreateFeature(outFeature)
+#     outLayer.CreateFeature(outFeature)
 
-    outFeature = None
-    OutLayer = None
-    OutDataSource = None
+#     outFeature = None
+#     OutLayer = None
+#     OutDataSource = None
 
 
 
-poly_wse_shp_buffer_dissolved = os.path.join(tempDir, "test_polygon_all_data_buffer_dissolved.shp")
-dissolve_polygon(poly_wse_shp_buffer, poly_wse_shp_buffer_dissolved)
+# poly_wse_shp_buffer_dissolved = os.path.join(tempDir, "test_polygon_all_data_buffer_dissolved.shp")
+# dissolve_polygon(poly_wse_shp_buffer, poly_wse_shp_buffer_dissolved)
 
-print("Writing Projection file w/ hardcoded coordinate system.")
-with open(os.path.join(tempDir, "test_polygon_all_data_buffer_dissolved" + '.prj'), 'w') as f:
-    f.write(coord_sys)
-    f.close
+# print("Writing Projection file w/ hardcoded coordinate system.")
+# with open(os.path.join(tempDir, "test_polygon_all_data_buffer_dissolved" + '.prj'), 'w') as f:
+#     f.write(coord_sys)
+#     f.close
 
 
 #*************************************************************************************************
@@ -477,9 +477,9 @@ def get_XS_names (hf):
         # print (dataset)
         # data_list = np.zeros([1, ], dtype='float64')
         data_list = np.array(dataset).tolist()
-        print ("hf['Geometry']['Cross Sections']['Attributes']" + " does not exist")
         return data_list
     except:
+        print ("XS_names not found in hdf file.")
         return None
 
 def get_XS_polyline_info (hf):
@@ -489,9 +489,9 @@ def get_XS_polyline_info (hf):
         # print (dataset)
         # data_list = np.zeros([1, ], dtype='float64')
         data_list = np.array(dataset).tolist()
-        print ("hf['Geometry']['Cross Sections']['Polyline Info']" + " does not exist")
         return data_list
     except:
+        print ("XS_polyline_info not found in hdf file.")
         return None
 
 def get_XS_polyline_points (hf):
@@ -501,9 +501,9 @@ def get_XS_polyline_points (hf):
         # print (dataset)
         # data_list = np.zeros([1, ], dtype='float64')
         data_list = np.array(dataset).tolist()
-        print ("hf['Geometry']['Cross Sections']['Polyline Points']" + " does not exist")
         return data_list
     except:
+        print ("XS_polyline_points not found in hdf file.")
         return None
 
 def get_XS_wse_results (hf):
@@ -514,461 +514,461 @@ def get_XS_wse_results (hf):
         # print (dataset)
         # data_list = np.zeros([1, ], dtype='float64')
         data_list = np.array(dataset).tolist()
-        print ("hf['Results']['Unsteady']['Output']['Output Blocks']['Base Output']['Unsteady Time Series']['Cross Sections']['Water Surface']" + " does not exist")
         return data_list
     except:
+        print ("XS_wse_results not found in hdf file.")
         return None
 
 #-------------------------------------------------------------------------------------
 #--------------------Get XS data from HDF file------------------------------------------
 #*******************************************************************************************
-print("Accessing XS Data from HDF file...")
+# print("Accessing XS Data from HDF file...")
 
-XS_names = get_XS_names(hf)
-XS_polyline_info = get_XS_polyline_info(hf)
-XS_polyline_pts = get_XS_polyline_points(hf)
-XS_wse_results = (np.array(get_XS_wse_results(hf))).T.round(decimals=2)
+# XS_names = get_XS_names(hf)
+# XS_polyline_info = get_XS_polyline_info(hf)
+# XS_polyline_pts = get_XS_polyline_points(hf)
+# XS_wse_results = (np.array(get_XS_wse_results(hf))).T.round(decimals=2)
 
-max_of_XS_row = np.max(XS_wse_results, axis=1)
-XS_wse_results = np.column_stack((XS_wse_results, max_of_XS_row))
+# max_of_XS_row = np.max(XS_wse_results, axis=1)
+# XS_wse_results = np.column_stack((XS_wse_results, max_of_XS_row))
 
-#-----------------Start assembling XS polyline point collections---------------------------
-print('Beginning to assemble XS Polyline point collections...')
-XS_polyline_pts_collections = []
-for XS_index, XS in enumerate(XS_names):
-    st_pt = XS_polyline_info[XS_index][0]
-    num_pts = XS_polyline_info[XS_index][1]
-    polyline =[]
-    i = 0
-    while i < num_pts:
-        polyline.append(XS_polyline_pts[st_pt + i])
-        i += 1
-    XS_polyline_pts_collections.append(polyline)
-
-
-
-#*****************Initialize Output XS Polyline Shapefile*******************************
-#Initialize shapefile of all 2D flow cells
-w = shapefile.Writer(os.path.join(tempDir,'test_XS_results_all_data'))
+# #-----------------Start assembling XS polyline point collections---------------------------
+# print('Beginning to assemble XS Polyline point collections...')
+# XS_polyline_pts_collections = []
+# for XS_index, XS in enumerate(XS_names):
+#     st_pt = XS_polyline_info[XS_index][0]
+#     num_pts = XS_polyline_info[XS_index][1]
+#     polyline =[]
+#     i = 0
+#     while i < num_pts:
+#         polyline.append(XS_polyline_pts[st_pt + i])
+#         i += 1
+#     XS_polyline_pts_collections.append(polyline)
 
 
-# Writing field names and types
-# "C": Characters, text.
-# "N": Numbers, with or without decimals.
-# "F": Floats(same as "N").
-# "L": Logical, for boolean True / False values.
-# "D": Dates.
-# "M": Memo
-w.field('River', 'C')
-w.field('Reach','C')
-w.field('Station', 'C')
-#Creating Results fields, same number as timesteps
-i = 0
-while i < timesteps:
-    w.field('wse_' + str(i), 'N', decimal=2)
-    i += 1
 
-#Add a wse for maximum water surface at end
-w.field('wse_max', 'N', decimal=2)
+# #*****************Initialize Output XS Polyline Shapefile*******************************
+# #Initialize shapefile of all 2D flow cells
+# w = shapefile.Writer(os.path.join(tempDir,'test_XS_results_all_data'))
 
 
-for XS_index, XS in enumerate(XS_names):
+# # Writing field names and types
+# # "C": Characters, text.
+# # "N": Numbers, with or without decimals.
+# # "F": Floats(same as "N").
+# # "L": Logical, for boolean True / False values.
+# # "D": Dates.
+# # "M": Memo
+# w.field('River', 'C')
+# w.field('Reach','C')
+# w.field('Station', 'C')
+# #Creating Results fields, same number as timesteps
+# i = 0
+# while i < timesteps:
+#     w.field('wse_' + str(i), 'N', decimal=2)
+#     i += 1
 
-    w.line([XS_polyline_pts_collections[XS_index]])
+# #Add a wse for maximum water surface at end
+# w.field('wse_max', 'N', decimal=2)
 
-    results_records = XS_wse_results[XS_index].tolist()
-    results_records.insert(0, XS_names[XS_index][0].decode('UTF-8'))
-    results_records.insert(1, XS_names[XS_index][1].decode('UTF-8'))
-    results_records.insert(2, XS_names[XS_index][2].decode('UTF-8'))
-    w.record(*results_records)
 
-coord_sys = 'PROJCS["NAD_1983_BLM_Zone_15N_ftUS",GEOGCS' \
-                '["GCS_North_American_1983",DATUM["D_North_American_1983",'\
-                'SPHEROID["GRS_1980",6378137.0,298.257222101]],' \
-                'PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],' \
-                'PROJECTION["Transverse_Mercator"],PARAMETER["False_Easting",1640416.666666667],' \
-                'PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-93.0],'\
-                'PARAMETER["Scale_Factor",0.9996],PARAMETER["Latitude_Of_Origin",0.0],'\
-                'UNIT["Foot_US",0.3048006096012192]]'
+# for XS_index, XS in enumerate(XS_names):
 
-#Close 2DArea polygon shapefile
-print("Closing shapefile with all XS results.")
-w.close()
+#     w.line([XS_polyline_pts_collections[XS_index]])
 
-print("Writing Projection file w/ hardcoded coordinate system.")
-with open(os.path.join(tempDir,'test_XS_results_all_data.prj'), 'w') as f:
-    f.write(coord_sys)
-    f.close()
+#     results_records = XS_wse_results[XS_index].tolist()
+#     results_records.insert(0, XS_names[XS_index][0].decode('UTF-8'))
+#     results_records.insert(1, XS_names[XS_index][1].decode('UTF-8'))
+#     results_records.insert(2, XS_names[XS_index][2].decode('UTF-8'))
+#     w.record(*results_records)
+
+# coord_sys = 'PROJCS["NAD_1983_BLM_Zone_15N_ftUS",GEOGCS' \
+#                 '["GCS_North_American_1983",DATUM["D_North_American_1983",'\
+#                 'SPHEROID["GRS_1980",6378137.0,298.257222101]],' \
+#                 'PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],' \
+#                 'PROJECTION["Transverse_Mercator"],PARAMETER["False_Easting",1640416.666666667],' \
+#                 'PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-93.0],'\
+#                 'PARAMETER["Scale_Factor",0.9996],PARAMETER["Latitude_Of_Origin",0.0],'\
+#                 'UNIT["Foot_US",0.3048006096012192]]'
+
+# #Close 2DArea polygon shapefile
+# print("Closing shapefile with all XS results.")
+# w.close()
+
+# print("Writing Projection file w/ hardcoded coordinate system.")
+# with open(os.path.join(tempDir,'test_XS_results_all_data.prj'), 'w') as f:
+#     f.write(coord_sys)
+#     f.close()
 
 #*************************************************************************************************
 #-----------------------------Loop through and get Centerlines------------------------------------
 #*************************************************************************************************
-def get_stream_names (hf):
-    dfstream_names = hf['Geometry']['River Centerlines']['Attributes']
-    dataset = dfstream_names
-    # print (dataset)
-    # data_list = np.zeros([1, ], dtype='float64')
-    data_list = np.array(dataset).tolist()
-    return data_list
-
-def get_stream_polyline_info (hf):
-    dfstream_geo_info = hf['Geometry']['River Centerlines']['Polyline Info']
-    dataset = dfstream_geo_info
-    # print (dataset)
-    # data_list = np.zeros([1, ], dtype='float64')
-    data_list = np.array(dataset).tolist()
-    return data_list
-
-def get_stream_polyline_points (hf):
-    dfstream_geo_pts = hf['Geometry']['River Centerlines']['Polyline Points']
-    dataset = dfstream_geo_pts
-    # print (dataset)
-    # data_list = np.zeros([1, ], dtype='float64')
-    data_list = np.array(dataset).tolist()
-    return data_list
-#-------------------------------------------------------------------------------------
-#--------------------Get Stream Centerline data from HDF file------------------------------------------
-#*******************************************************************************************
-print("Accessing XS Data from HDF file...")
-
-stream_names = get_stream_names(hf)
-stream_polyline_info = get_stream_polyline_info(hf)
-stream_polyline_pts = get_stream_polyline_points(hf)
-
-
-#-----------------Start assembling Stream Centerline polyline point collections---------------------------
-print('Beginning to assemble Stream Centerline point collections...')
-stream_polyline_pts_collections = []
-for stream_index, stream in enumerate(stream_names):
-    st_pt = stream_polyline_info[stream_index][0]
-    num_pts = stream_polyline_info[stream_index][1]
-    polyline =[]
-    i = 0
-    while i < num_pts:
-        polyline.append(stream_polyline_pts[st_pt + i])
-        i += 1
-    stream_polyline_pts_collections.append(polyline)
-#*****************Initialize Output Stream Polyline Shapefile*******************************
-#Initialize shapefile of Stream centerlines
-w = shapefile.Writer(os.path.join(home_dir,'test_stream_centerlines'))
-
-# Writing field names and types
-# "C": Characters, text.
-# "N": Numbers, with or without decimals.
-# "F": Floats(same as "N").
-# "L": Logical, for boolean True / False values.
-# "D": Dates.
-# "M": Memo
-w.field('River', 'C', 16)
-w.field('Reach','C')
-#w.field('Station', 'C')
-#Creating Results fields, same number as timesteps
-#i = 0
-#while i < timesteps:
-    #w.field('wse_' + str(i), 'N', decimal=2)
-    #i += 1
-
-for stream_index, stream in enumerate(stream_names):
-
-    w.line([stream_polyline_pts_collections[stream_index]])
-
-    #results_records = XS_wse_results[stream_polyline_pts_collections].tolist()
-    results_records = stream_names[stream_index][0:2]
-    #results_records.insert(1, XS_names[stream_polyline_pts_collections][1].decode('UTF-8'))
-    #results_records.insert(2, XS_names[stream_polyline_pts_collections][2].decode('UTF-8'))
-    w.record(*results_records)
-
-coord_sys = 'PROJCS["NAD_1983_BLM_Zone_15N_ftUS",GEOGCS' \
-                '["GCS_North_American_1983",DATUM["D_North_American_1983",'\
-                'SPHEROID["GRS_1980",6378137.0,298.257222101]],' \
-                'PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],' \
-                'PROJECTION["Transverse_Mercator"],PARAMETER["False_Easting",1640416.666666667],' \
-                'PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-93.0],'\
-                'PARAMETER["Scale_Factor",0.9996],PARAMETER["Latitude_Of_Origin",0.0],'\
-                'UNIT["Foot_US",0.3048006096012192]]'
-
-#Close Stream Centerline shapefile
-print("Closing shapefile with all Stream Centerlines.")
-w.close()
-
-print("Writing Projection file w/ hardcoded coordinate system.")
-with open(os.path.join(home_dir,'test_stream_centerlines.prj'), 'w') as f:
-    f.write(coord_sys)
-    f.close()
-
-#-----------------Start assembling Boundary polygon point collections---------------------------
-
-print('Beginning to assemble Stream boundary polygon collections...')
-
-#Remove duplicate river names from list
-river_names = []
-for stream in stream_names:
-    if stream[0] not in river_names:
-        river_names.append(stream[0])
-
-boundary_polygon_collections = []
-
-for river in river_names:
-    print("Assembling boundary polygon for %s" %str(river))
-    left_side_pts = []
-    right_side_pts = []
-    curr_stream_polygon = []
-    curr_stream_XS_indexes = []
-
-    #Assemble list of cross-sections indexes for current stream
-    for XS_index, XS in enumerate(XS_names):
-        if XS[0] == river:
-            curr_stream_XS_indexes.append(XS_index)
-
-    #Farthest upstream XS pts
-    upstream_XS_index = curr_stream_XS_indexes[0]
-    st_pt = XS_polyline_info[upstream_XS_index][0]
-    num_pts = XS_polyline_info[upstream_XS_index][1]
-    upstream_polyline_pts = []
-    i = 0
-    while i < num_pts:
-        #Assembling from right to left
-        upstream_polyline_pts.insert(0, XS_polyline_pts[st_pt + i])
-        i += 1
-
-    #Farthest downstream XS pts
-    downstream_XS_index = curr_stream_XS_indexes[-1]
-    st_pt = XS_polyline_info[downstream_XS_index][0]
-    num_pts = XS_polyline_info[downstream_XS_index][1]
-    downstream_polyline_pts = []
-    i = 0
-    while i < num_pts:
-        # Assembling from left to right
-        downstream_polyline_pts.append(XS_polyline_pts[st_pt + i])
-        i += 1
-
-    #Iterate through remaining list of cross-sections, skipping first and last XSs
-    for XS_index in curr_stream_XS_indexes[1:-1]:
-        left_side_index = XS_polyline_info[XS_index][0]
-        right_side_index = left_side_index + (XS_polyline_info[XS_index][1] - 1)
-
-        left_side_pts.append(XS_polyline_pts[left_side_index])
-        right_side_pts.insert(0, XS_polyline_pts[right_side_index])
-
-    #Assemble polygon sides starting with upstream, left side, downstream, right side
-    curr_stream_polygon = upstream_polyline_pts + left_side_pts + downstream_polyline_pts + right_side_pts
-
-    #Add current stream boundary polygon to collection
-    boundary_polygon_collections.append(curr_stream_polygon)
-
-
-
-#*****************Initialize Output Boundary Polygons Shapefile*******************************
-#Initialize shapefile of boundary Polygons
-print('Beginning to create Stream boundary polygon shapefile...')
-raw_boundary = os.path.join(tempDir,'raw_boundary_polygons.shp')
-w = shapefile.Writer(raw_boundary)
-
-
-# Writing field names and types
-# "C": Characters, text.
-# "N": Numbers, with or without decimals.
-# "F": Floats(same as "N").
-# "L": Logical, for boolean True / False values.
-# "D": Dates.
-# "M": Memo
-w.field('River', 'C', )
-#w.field('Reach','C')
-#w.field('Station', 'C')
-#Creating Results fields, same number as timesteps
-
-for river_index, river in enumerate(river_names):
-    w.poly([boundary_polygon_collections[river_index]])
-    results_records = river.decode('UTF-8')
-    w.record(*results_records)
-
-coord_sys = 'PROJCS["NAD_1983_BLM_Zone_15N_ftUS",GEOGCS' \
-                '["GCS_North_American_1983",DATUM["D_North_American_1983",'\
-                'SPHEROID["GRS_1980",6378137.0,298.257222101]],' \
-                'PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],' \
-                'PROJECTION["Transverse_Mercator"],PARAMETER["False_Easting",1640416.666666667],' \
-                'PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-93.0],'\
-                'PARAMETER["Scale_Factor",0.9996],PARAMETER["Latitude_Of_Origin",0.0],'\
-                'UNIT["Foot_US",0.3048006096012192]]'
-
-#Close boundary polygon shapefile
-print("Closing shapefile with all Boundary Polygons.")
-w.close()
-
-print("Writing Projection file w/ hardcoded coordinate system.")
-with open(os.path.join(tempDir,'raw_boundary_polygons.prj'), 'w') as f:
-    f.write(coord_sys)
-    f.close()
-
-#***************************************Fix self intersections*********************************************
-print('Buffering boundary polygon shapefile by small amount to remove self-intersections and slivers...')
-boundary_buffer = os.path.join(tempDir, "test_boundary_polygon_temp_buffer" + ".shp")
-createBuffer(raw_boundary,boundary_buffer, 50)
-
-#***************************************Buffer Stream Centerlines******************************************
-print('Buffering centerline shapefile by 100ft...')
-test_stream_centerlines = os.path.join(home_dir,'test_stream_centerlines.shp')
-test_stream_centerlines_buffer = os.path.join(tempDir,'test_stream_centerlines_buffer.shp')
-createBuffer(test_stream_centerlines, test_stream_centerlines_buffer, 100)
-
-print("Writing Projection file w/ hardcoded coordinate system.")
-with open(os.path.join(tempDir,'test_stream_centerlines_buffer.prj'), 'w') as f:
-    f.write(coord_sys)
-    f.close()
-
-#***********************************Merging buffered centerlines w/ boundary polygon***************************
-print("Merging buffered centerlines w/ boundary polygon...")
-def merge(target, source):
-     # layer of target shp
-     driver = ogr.GetDriverByName("ESRI Shapefile")
-     ds_t = driver.Open(target, 1)
-     tr_layer = ds_t.GetLayer()
-
-     # layer of soruce shp
-     driver = ogr.GetDriverByName("ESRI Shapefile")
-     ds_s = driver.Open(source, 1)
-     sr_layer = ds_s.GetLayer()
-
-     # copy features:
-     for f in sr_layer:
-         defn = tr_layer.GetLayerDefn()
-         out_feat = ogr.Feature(defn)
-
-         for i in range(0, defn.GetFieldCount()):
-             out_feat.SetField(defn.GetFieldDefn(i).GetNameRef(), f.GetField(i))
-
-         out_feat.SetGeometry(f.GetGeometryRef().Clone())
-         tr_layer.CreateFeature(out_feat)
-         out_feat = None
-
-merge(boundary_buffer, test_stream_centerlines_buffer)
-
-#***********************************Erase 1D area by 2D polygons*****************************************
-print('Erasing the 2D polygon buffered areas from the boundary polygon...')
-def erase_shapes(to_erase, eraser, out_file):
-    feat1 = ogr.Open(to_erase,1)
-    feat2 = ogr.Open(eraser,1)
-    feat1Layer = feat1.GetLayer()
-    feat2Layer = feat2.GetLayer()
-    driver = ogr.GetDriverByName('ESRI Shapefile')
-    outDataSource = driver.CreateDataSource(out_file)
-    srs = feat1Layer.GetSpatialRef()
-    outLayer = outDataSource.CreateLayer('', srs, ogr.wkbPolygon)
-    out_ds = feat1Layer.Erase(feat2Layer, outLayer)
-    out_ds = None
-
-final_1D_boundary = os.path.join(tempDir,'test_boundary_polygon_erase_2DArea.shp')
-erase_shapes(boundary_buffer, poly_wse_shp_buffer_dissolved,final_1D_boundary)
-
-print("Writing Projection file w/ hardcoded coordinate system.")
-with open(os.path.join(tempDir,'test_boundary_polygon_erase_2DArea.prj'), 'w') as f:
-    f.write(coord_sys)
-    f.close()
-
-
-#**********************************Multipart to singlepart*****************************
-print("Converting Boundary Polygon from Multipart to Singlepart...")
-def multipoly2poly(in_lyr, out_lyr):
-    for in_feat in in_lyr:
-        geom = in_feat.GetGeometryRef()
-        if geom.GetGeometryName() == 'MULTIPOLYGON':
-            for geom_part in geom:
-                addPolygon(geom_part.ExportToWkb(), out_lyr)
-        else:
-            addPolygon(geom.ExportToWkb(), out_lyr)
-
-def addPolygon(simplePolygon, out_lyr):
-    featureDefn = out_lyr.GetLayerDefn()
-    polygon = ogr.CreateGeometryFromWkb(simplePolygon)
-    out_feat = ogr.Feature(featureDefn)
-    out_feat.SetGeometry(polygon)
-    out_lyr.CreateFeature(out_feat)
-    print ('Polygon added.')
-
-from osgeo import gdal
-gdal.UseExceptions()
-driver = ogr.GetDriverByName('ESRI Shapefile')
-in_ds = driver.Open(final_1D_boundary, 0)
-in_lyr = in_ds.GetLayer()
-final_1D_boundary_singlepart = os.path.join(tempDir,'test_boundary_polygon_erase_2DArea_singlepart.shp')
-
-if os.path.exists(final_1D_boundary_singlepart):
-    driver.DeleteDataSource(final_1D_boundary_singlepart)
-out_ds = driver.CreateDataSource(final_1D_boundary_singlepart)
-out_lyr = out_ds.CreateLayer('poly', geom_type=ogr.wkbPolygon)
-multipoly2poly(in_lyr, out_lyr)
-
-#**********************************Calculate and remove small polygons****************
-print("Calculating and removing small polygons...")
-new_field = ogr.FieldDefn('Area', ogr.OFTInteger)
-new_field.SetWidth(12)
-out_lyr.CreateField(new_field)
-
-for feature in out_lyr:
-    try:
-        geom = feature.GetGeometryRef()
-        area = geom.GetArea() / (43560)  # (convert to acres)
-        feature.SetField("Area", area)
-        out_lyr.SetFeature(feature)
-    except RuntimeError as err:
-        print("Error in reading feature %d - %s" % (fid, err))
-        continue  # skip this feature
-
-
-print('...selecting polygons smaller than 20 acre...')
-out_lyr.SetAttributeFilter("Area < 20")
-
-for feature in out_lyr:
-    feature.GetField("Area")
-    out_lyr.DeleteFeature(feature.GetFID())
-    in_ds.ExecuteSQL('REPACK ' + out_lyr.GetName())
-out_lyr = None
-in_ds = None
-in_lyr = None
-print("Writing Projection file w/ hardcoded coordinate system.")
-with open(os.path.join(tempDir,'test_boundary_polygon_erase_2DArea_singlepart.prj'), 'w') as f:
-    f.write(coord_sys)
-    f.close()
-
-#**********************************Dissolve polygon************************************
-print("Dissolving part of Boundary Polygon...")
-def dissolve_polygon(input_shp, out_file):
-    ds = ogr.Open(input_shp)
-    layer = ds.GetLayer()
-    print (layer.GetGeomType())
-    # -> polygons
-    # empty geometry
-    union_poly = ogr.Geometry(ogr.wkbPolygon)
-    # make the union of polygons
-    for feature in layer:
-          geom =feature.GetGeometryRef()
-          union_poly = union_poly.Union(geom)
-
-    #print (union_poly)
-
-    driver = ogr.GetDriverByName('ESRI Shapefile')
-    outDataSource = driver.CreateDataSource(out_file)
-    srs = layer.GetSpatialRef()
-    outLayer = outDataSource.CreateLayer('', srs, ogr.wkbPolygon)
-    featureDefn = outLayer.GetLayerDefn()
-    outFeature = ogr.Feature(featureDefn)
-    outFeature.SetGeometry(union_poly)
-
-    outLayer.CreateFeature(outFeature)
-
-    outFeature = None
-    OutLayer = None
-    OutDataSource = None
-
-
-final_1D_boundary_dissolve = os.path.join(tempDir, 'final_1D_boundary_dissolve.shp')
-dissolve_polygon(final_1D_boundary_singlepart, final_1D_boundary_dissolve)
-
-
-print("Writing Projection file w/ hardcoded coordinate system.")
-with open(os.path.join(tempDir,'test_boundary_polygon_erase_2DArea_dissolve.prj'), 'w') as f:
-    f.write(coord_sys)
-    f.close()
+# def get_stream_names (hf):
+#     dfstream_names = hf['Geometry']['River Centerlines']['Attributes']
+#     dataset = dfstream_names
+#     # print (dataset)
+#     # data_list = np.zeros([1, ], dtype='float64')
+#     data_list = np.array(dataset).tolist()
+#     return data_list
+
+# def get_stream_polyline_info (hf):
+#     dfstream_geo_info = hf['Geometry']['River Centerlines']['Polyline Info']
+#     dataset = dfstream_geo_info
+#     # print (dataset)
+#     # data_list = np.zeros([1, ], dtype='float64')
+#     data_list = np.array(dataset).tolist()
+#     return data_list
+
+# def get_stream_polyline_points (hf):
+#     dfstream_geo_pts = hf['Geometry']['River Centerlines']['Polyline Points']
+#     dataset = dfstream_geo_pts
+#     # print (dataset)
+#     # data_list = np.zeros([1, ], dtype='float64')
+#     data_list = np.array(dataset).tolist()
+#     return data_list
+# #-------------------------------------------------------------------------------------
+# #--------------------Get Stream Centerline data from HDF file------------------------------------------
+# #*******************************************************************************************
+# print("Accessing XS Data from HDF file...")
+
+# stream_names = get_stream_names(hf)
+# stream_polyline_info = get_stream_polyline_info(hf)
+# stream_polyline_pts = get_stream_polyline_points(hf)
+
+
+# #-----------------Start assembling Stream Centerline polyline point collections---------------------------
+# print('Beginning to assemble Stream Centerline point collections...')
+# stream_polyline_pts_collections = []
+# for stream_index, stream in enumerate(stream_names):
+#     st_pt = stream_polyline_info[stream_index][0]
+#     num_pts = stream_polyline_info[stream_index][1]
+#     polyline =[]
+#     i = 0
+#     while i < num_pts:
+#         polyline.append(stream_polyline_pts[st_pt + i])
+#         i += 1
+#     stream_polyline_pts_collections.append(polyline)
+# #*****************Initialize Output Stream Polyline Shapefile*******************************
+# #Initialize shapefile of Stream centerlines
+# w = shapefile.Writer(os.path.join(home_dir,'test_stream_centerlines'))
+
+# # Writing field names and types
+# # "C": Characters, text.
+# # "N": Numbers, with or without decimals.
+# # "F": Floats(same as "N").
+# # "L": Logical, for boolean True / False values.
+# # "D": Dates.
+# # "M": Memo
+# w.field('River', 'C', 16)
+# w.field('Reach','C')
+# #w.field('Station', 'C')
+# #Creating Results fields, same number as timesteps
+# #i = 0
+# #while i < timesteps:
+#     #w.field('wse_' + str(i), 'N', decimal=2)
+#     #i += 1
+
+# for stream_index, stream in enumerate(stream_names):
+
+#     w.line([stream_polyline_pts_collections[stream_index]])
+
+#     #results_records = XS_wse_results[stream_polyline_pts_collections].tolist()
+#     results_records = stream_names[stream_index][0:2]
+#     #results_records.insert(1, XS_names[stream_polyline_pts_collections][1].decode('UTF-8'))
+#     #results_records.insert(2, XS_names[stream_polyline_pts_collections][2].decode('UTF-8'))
+#     w.record(*results_records)
+
+# coord_sys = 'PROJCS["NAD_1983_BLM_Zone_15N_ftUS",GEOGCS' \
+#                 '["GCS_North_American_1983",DATUM["D_North_American_1983",'\
+#                 'SPHEROID["GRS_1980",6378137.0,298.257222101]],' \
+#                 'PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],' \
+#                 'PROJECTION["Transverse_Mercator"],PARAMETER["False_Easting",1640416.666666667],' \
+#                 'PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-93.0],'\
+#                 'PARAMETER["Scale_Factor",0.9996],PARAMETER["Latitude_Of_Origin",0.0],'\
+#                 'UNIT["Foot_US",0.3048006096012192]]'
+
+# #Close Stream Centerline shapefile
+# print("Closing shapefile with all Stream Centerlines.")
+# w.close()
+
+# print("Writing Projection file w/ hardcoded coordinate system.")
+# with open(os.path.join(home_dir,'test_stream_centerlines.prj'), 'w') as f:
+#     f.write(coord_sys)
+#     f.close()
+
+# #-----------------Start assembling Boundary polygon point collections---------------------------
+
+# print('Beginning to assemble Stream boundary polygon collections...')
+
+# #Remove duplicate river names from list
+# river_names = []
+# for stream in stream_names:
+#     if stream[0] not in river_names:
+#         river_names.append(stream[0])
+
+# boundary_polygon_collections = []
+
+# for river in river_names:
+#     print("Assembling boundary polygon for %s" %str(river))
+#     left_side_pts = []
+#     right_side_pts = []
+#     curr_stream_polygon = []
+#     curr_stream_XS_indexes = []
+
+#     #Assemble list of cross-sections indexes for current stream
+#     for XS_index, XS in enumerate(XS_names):
+#         if XS[0] == river:
+#             curr_stream_XS_indexes.append(XS_index)
+
+#     #Farthest upstream XS pts
+#     upstream_XS_index = curr_stream_XS_indexes[0]
+#     st_pt = XS_polyline_info[upstream_XS_index][0]
+#     num_pts = XS_polyline_info[upstream_XS_index][1]
+#     upstream_polyline_pts = []
+#     i = 0
+#     while i < num_pts:
+#         #Assembling from right to left
+#         upstream_polyline_pts.insert(0, XS_polyline_pts[st_pt + i])
+#         i += 1
+
+#     #Farthest downstream XS pts
+#     downstream_XS_index = curr_stream_XS_indexes[-1]
+#     st_pt = XS_polyline_info[downstream_XS_index][0]
+#     num_pts = XS_polyline_info[downstream_XS_index][1]
+#     downstream_polyline_pts = []
+#     i = 0
+#     while i < num_pts:
+#         # Assembling from left to right
+#         downstream_polyline_pts.append(XS_polyline_pts[st_pt + i])
+#         i += 1
+
+#     #Iterate through remaining list of cross-sections, skipping first and last XSs
+#     for XS_index in curr_stream_XS_indexes[1:-1]:
+#         left_side_index = XS_polyline_info[XS_index][0]
+#         right_side_index = left_side_index + (XS_polyline_info[XS_index][1] - 1)
+
+#         left_side_pts.append(XS_polyline_pts[left_side_index])
+#         right_side_pts.insert(0, XS_polyline_pts[right_side_index])
+
+#     #Assemble polygon sides starting with upstream, left side, downstream, right side
+#     curr_stream_polygon = upstream_polyline_pts + left_side_pts + downstream_polyline_pts + right_side_pts
+
+#     #Add current stream boundary polygon to collection
+#     boundary_polygon_collections.append(curr_stream_polygon)
+
+
+
+# #*****************Initialize Output Boundary Polygons Shapefile*******************************
+# #Initialize shapefile of boundary Polygons
+# print('Beginning to create Stream boundary polygon shapefile...')
+# raw_boundary = os.path.join(tempDir,'raw_boundary_polygons.shp')
+# w = shapefile.Writer(raw_boundary)
+
+
+# # Writing field names and types
+# # "C": Characters, text.
+# # "N": Numbers, with or without decimals.
+# # "F": Floats(same as "N").
+# # "L": Logical, for boolean True / False values.
+# # "D": Dates.
+# # "M": Memo
+# w.field('River', 'C', )
+# #w.field('Reach','C')
+# #w.field('Station', 'C')
+# #Creating Results fields, same number as timesteps
+
+# for river_index, river in enumerate(river_names):
+#     w.poly([boundary_polygon_collections[river_index]])
+#     results_records = river.decode('UTF-8')
+#     w.record(*results_records)
+
+# coord_sys = 'PROJCS["NAD_1983_BLM_Zone_15N_ftUS",GEOGCS' \
+#                 '["GCS_North_American_1983",DATUM["D_North_American_1983",'\
+#                 'SPHEROID["GRS_1980",6378137.0,298.257222101]],' \
+#                 'PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],' \
+#                 'PROJECTION["Transverse_Mercator"],PARAMETER["False_Easting",1640416.666666667],' \
+#                 'PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",-93.0],'\
+#                 'PARAMETER["Scale_Factor",0.9996],PARAMETER["Latitude_Of_Origin",0.0],'\
+#                 'UNIT["Foot_US",0.3048006096012192]]'
+
+# #Close boundary polygon shapefile
+# print("Closing shapefile with all Boundary Polygons.")
+# w.close()
+
+# print("Writing Projection file w/ hardcoded coordinate system.")
+# with open(os.path.join(tempDir,'raw_boundary_polygons.prj'), 'w') as f:
+#     f.write(coord_sys)
+#     f.close()
+
+# #***************************************Fix self intersections*********************************************
+# print('Buffering boundary polygon shapefile by small amount to remove self-intersections and slivers...')
+# boundary_buffer = os.path.join(tempDir, "test_boundary_polygon_temp_buffer" + ".shp")
+# createBuffer(raw_boundary,boundary_buffer, 50)
+
+# #***************************************Buffer Stream Centerlines******************************************
+# print('Buffering centerline shapefile by 100ft...')
+# test_stream_centerlines = os.path.join(home_dir,'test_stream_centerlines.shp')
+# test_stream_centerlines_buffer = os.path.join(tempDir,'test_stream_centerlines_buffer.shp')
+# createBuffer(test_stream_centerlines, test_stream_centerlines_buffer, 100)
+
+# print("Writing Projection file w/ hardcoded coordinate system.")
+# with open(os.path.join(tempDir,'test_stream_centerlines_buffer.prj'), 'w') as f:
+#     f.write(coord_sys)
+#     f.close()
+
+# #***********************************Merging buffered centerlines w/ boundary polygon***************************
+# print("Merging buffered centerlines w/ boundary polygon...")
+# def merge(target, source):
+#      # layer of target shp
+#      driver = ogr.GetDriverByName("ESRI Shapefile")
+#      ds_t = driver.Open(target, 1)
+#      tr_layer = ds_t.GetLayer()
+
+#      # layer of soruce shp
+#      driver = ogr.GetDriverByName("ESRI Shapefile")
+#      ds_s = driver.Open(source, 1)
+#      sr_layer = ds_s.GetLayer()
+
+#      # copy features:
+#      for f in sr_layer:
+#          defn = tr_layer.GetLayerDefn()
+#          out_feat = ogr.Feature(defn)
+
+#          for i in range(0, defn.GetFieldCount()):
+#              out_feat.SetField(defn.GetFieldDefn(i).GetNameRef(), f.GetField(i))
+
+#          out_feat.SetGeometry(f.GetGeometryRef().Clone())
+#          tr_layer.CreateFeature(out_feat)
+#          out_feat = None
+
+# merge(boundary_buffer, test_stream_centerlines_buffer)
+
+# #***********************************Erase 1D area by 2D polygons*****************************************
+# print('Erasing the 2D polygon buffered areas from the boundary polygon...')
+# def erase_shapes(to_erase, eraser, out_file):
+#     feat1 = ogr.Open(to_erase,1)
+#     feat2 = ogr.Open(eraser,1)
+#     feat1Layer = feat1.GetLayer()
+#     feat2Layer = feat2.GetLayer()
+#     driver = ogr.GetDriverByName('ESRI Shapefile')
+#     outDataSource = driver.CreateDataSource(out_file)
+#     srs = feat1Layer.GetSpatialRef()
+#     outLayer = outDataSource.CreateLayer('', srs, ogr.wkbPolygon)
+#     out_ds = feat1Layer.Erase(feat2Layer, outLayer)
+#     out_ds = None
+
+# final_1D_boundary = os.path.join(tempDir,'test_boundary_polygon_erase_2DArea.shp')
+# erase_shapes(boundary_buffer, poly_wse_shp_buffer_dissolved,final_1D_boundary)
+
+# print("Writing Projection file w/ hardcoded coordinate system.")
+# with open(os.path.join(tempDir,'test_boundary_polygon_erase_2DArea.prj'), 'w') as f:
+#     f.write(coord_sys)
+#     f.close()
+
+
+# #**********************************Multipart to singlepart*****************************
+# print("Converting Boundary Polygon from Multipart to Singlepart...")
+# def multipoly2poly(in_lyr, out_lyr):
+#     for in_feat in in_lyr:
+#         geom = in_feat.GetGeometryRef()
+#         if geom.GetGeometryName() == 'MULTIPOLYGON':
+#             for geom_part in geom:
+#                 addPolygon(geom_part.ExportToWkb(), out_lyr)
+#         else:
+#             addPolygon(geom.ExportToWkb(), out_lyr)
+
+# def addPolygon(simplePolygon, out_lyr):
+#     featureDefn = out_lyr.GetLayerDefn()
+#     polygon = ogr.CreateGeometryFromWkb(simplePolygon)
+#     out_feat = ogr.Feature(featureDefn)
+#     out_feat.SetGeometry(polygon)
+#     out_lyr.CreateFeature(out_feat)
+#     print ('Polygon added.')
+
+# from osgeo import gdal
+# gdal.UseExceptions()
+# driver = ogr.GetDriverByName('ESRI Shapefile')
+# in_ds = driver.Open(final_1D_boundary, 0)
+# in_lyr = in_ds.GetLayer()
+# final_1D_boundary_singlepart = os.path.join(tempDir,'test_boundary_polygon_erase_2DArea_singlepart.shp')
+
+# if os.path.exists(final_1D_boundary_singlepart):
+#     driver.DeleteDataSource(final_1D_boundary_singlepart)
+# out_ds = driver.CreateDataSource(final_1D_boundary_singlepart)
+# out_lyr = out_ds.CreateLayer('poly', geom_type=ogr.wkbPolygon)
+# multipoly2poly(in_lyr, out_lyr)
+
+# #**********************************Calculate and remove small polygons****************
+# print("Calculating and removing small polygons...")
+# new_field = ogr.FieldDefn('Area', ogr.OFTInteger)
+# new_field.SetWidth(12)
+# out_lyr.CreateField(new_field)
+
+# for feature in out_lyr:
+#     try:
+#         geom = feature.GetGeometryRef()
+#         area = geom.GetArea() / (43560)  # (convert to acres)
+#         feature.SetField("Area", area)
+#         out_lyr.SetFeature(feature)
+#     except RuntimeError as err:
+#         print("Error in reading feature %d - %s" % (fid, err))
+#         continue  # skip this feature
+
+
+# print('...selecting polygons smaller than 20 acre...')
+# out_lyr.SetAttributeFilter("Area < 20")
+
+# for feature in out_lyr:
+#     feature.GetField("Area")
+#     out_lyr.DeleteFeature(feature.GetFID())
+#     in_ds.ExecuteSQL('REPACK ' + out_lyr.GetName())
+# out_lyr = None
+# in_ds = None
+# in_lyr = None
+# print("Writing Projection file w/ hardcoded coordinate system.")
+# with open(os.path.join(tempDir,'test_boundary_polygon_erase_2DArea_singlepart.prj'), 'w') as f:
+#     f.write(coord_sys)
+#     f.close()
+
+# #**********************************Dissolve polygon************************************
+# print("Dissolving part of Boundary Polygon...")
+# def dissolve_polygon(input_shp, out_file):
+#     ds = ogr.Open(input_shp)
+#     layer = ds.GetLayer()
+#     print (layer.GetGeomType())
+#     # -> polygons
+#     # empty geometry
+#     union_poly = ogr.Geometry(ogr.wkbPolygon)
+#     # make the union of polygons
+#     for feature in layer:
+#           geom =feature.GetGeometryRef()
+#           union_poly = union_poly.Union(geom)
+
+#     #print (union_poly)
+
+#     driver = ogr.GetDriverByName('ESRI Shapefile')
+#     outDataSource = driver.CreateDataSource(out_file)
+#     srs = layer.GetSpatialRef()
+#     outLayer = outDataSource.CreateLayer('', srs, ogr.wkbPolygon)
+#     featureDefn = outLayer.GetLayerDefn()
+#     outFeature = ogr.Feature(featureDefn)
+#     outFeature.SetGeometry(union_poly)
+
+#     outLayer.CreateFeature(outFeature)
+
+#     outFeature = None
+#     OutLayer = None
+#     OutDataSource = None
+
+
+# final_1D_boundary_dissolve = os.path.join(tempDir, 'final_1D_boundary_dissolve.shp')
+# dissolve_polygon(final_1D_boundary_singlepart, final_1D_boundary_dissolve)
+
+
+# print("Writing Projection file w/ hardcoded coordinate system.")
+# with open(os.path.join(tempDir,'test_boundary_polygon_erase_2DArea_dissolve.prj'), 'w') as f:
+#     f.write(coord_sys)
+#     f.close()
 
 # clip final shapefiles to post-processing area shapefile
 
@@ -1007,20 +1007,20 @@ def clip_shapefile(inputDS, clipDS, outputDS, geom):
     inClipSource.Destroy()
     outDataSource.Destroy()
 
-print("Now clipping final shapefiles to post-processing area polygon...")
-print("...clipping 2D WSE Polygons...")
-#Clip 2D WSE Polygons
-poly_wse_shp_clipped = os.path.join(home_dir, 'test_polygon_all_data_clipped.shp')
-clip_shapefile(poly_wse_shp, postp_area, poly_wse_shp_clipped, 'polygon')
+# print("Now clipping final shapefiles to post-processing area polygon...")
+# print("...clipping 2D WSE Polygons...")
+# #Clip 2D WSE Polygons
+# poly_wse_shp_clipped = os.path.join(home_dir, 'test_polygon_all_data_clipped.shp')
+# clip_shapefile(poly_wse_shp, postp_area, poly_wse_shp_clipped, 'polygon')
 
-print("...clipping 1D boundary area...")
-#Clip 1D Boundary Polygon
-final_1D_boundary_dissolve_clipped = os.path.join(home_dir, 'final_1D_boundary_dissolve_clipped.shp')
-clip_shapefile(final_1D_boundary_dissolve, postp_area, final_1D_boundary_dissolve_clipped, 'polygon')
+# print("...clipping 1D boundary area...")
+# #Clip 1D Boundary Polygon
+# final_1D_boundary_dissolve_clipped = os.path.join(home_dir, 'final_1D_boundary_dissolve_clipped.shp')
+# clip_shapefile(final_1D_boundary_dissolve, postp_area, final_1D_boundary_dissolve_clipped, 'polygon')
 
-print("...clipping XS WSE polylines...")
-#Clip XS WSE Results Polylines
-test_XS_results_all_data = os.path.join(tempDir,'test_XS_results_all_data.shp')
-test_XS_results_all_data_clipped = os.path.join(home_dir,'test_XS_results_all_data_clipped.shp')
-clip_shapefile(test_XS_results_all_data, postp_area, test_XS_results_all_data_clipped, 'polyline')
+# print("...clipping XS WSE polylines...")
+# #Clip XS WSE Results Polylines
+# test_XS_results_all_data = os.path.join(tempDir,'test_XS_results_all_data.shp')
+# test_XS_results_all_data_clipped = os.path.join(home_dir,'test_XS_results_all_data_clipped.shp')
+# clip_shapefile(test_XS_results_all_data, postp_area, test_XS_results_all_data_clipped, 'polyline')
 
