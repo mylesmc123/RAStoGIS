@@ -14,7 +14,7 @@ import imageio
 
 
 
-input_dir=r"Z:\LWI_StageIV\HurricaneKatrina2005"
+input_dir=r"Z:\LWI_StageIV\test"
 crop_shp = gpd.read_file(r"Z:\GIS\StageIv Boundary.shp")
 dst_crs = 'EPSG:4326'
 def animate(input_dir, crop_shp, dst_crs):
