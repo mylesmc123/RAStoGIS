@@ -5,12 +5,36 @@ import os
 import fnmatch
 import numpy as np
 import geopandas as gpd
+import shapely
 from rasterio.warp import calculate_default_transform, reproject, Resampling
 import earthpy.spatial as es
 import seaborn as sns
 import matplotlib.pyplot as plt
 import earthpy.plot as ep
 import imageio
+# import rasterio.plot
+
+# TODO Implement Cropped Incremental Movie
+
+# fig, ax = plt.subplots(figsize=(15, 15))
+# la = gpd.read_file("Z:\GIS\Louisiana.shp")
+# bbox = la.total_bounds
+# la_extent=bbox[[0,2,1,3]]
+
+# bbox_lwi = shapefile.total_bounds
+# lwi_extent = bbox_lwi[[0,2,1,3]]
+# fn = r"Z:\LWI_StageIV\Hurricane Katrina 2005\projected\ST4.2005082913.01h"
+# title = fn.split('\\')[-1]
+# raster = rasterio.open(fn)
+
+# raster_window = raster.window(*bbox_lwi)
+# array = raster.read(1, window=raster_window)
+# array[array==raster.nodata] = np.nan
+# im = plt.imshow(array, extent=lwi_extent, cmap='rainbow')
+# cb = plt.colorbar(im, shrink=.6)
+# ax.set(title=f"{title} Cumulative Precip (mm)")
+# ax.set_axis_off()
+# la.boundary.plot(ax=plt.gca(), color='darkgrey')
 
 # Takes a directory of Stage IV precip data from UCAR (uncompressed) and accumulates .01h files to a single geotif.
 # An image file of the geotif is also produced to quickly view the result.
@@ -22,6 +46,121 @@ outputDir= r'Z:\LWI_StageIV\!Accumulated'
 crop_shp = gpd.read_file(r"Z:\GIS\StageIv Boundary.shp")
 dst_crs = 'EPSG:4326'
 
+def projectRaster(raster_fn, raster_src, projected_dir):
+    transform, width, height = calculate_default_transform(
+            raster_src.crs, dst_crs, raster_src.width, raster_src.height, *raster_src.bounds)
+    kwargs = raster_src.meta.copy()
+    kwargs.update({
+        'crs': dst_crs,
+        'transform': transform,
+        'width': width,
+        'height': height
+    })
+
+    projected_raster = projected_dir + '\\' + raster_fn.split("\\")[-1]
+    with rasterio.open(projected_raster, 'w', **kwargs) as dst:
+        for i in range(1, raster_src.count + 1):
+            reproject(
+                source=rasterio.band(raster_src, i),
+                destination=rasterio.band(dst, i),
+                src_transform=raster_src.transform,
+                src_crs=raster_src.crs,
+                dst_transform=transform,
+                dst_crs=dst_crs,
+                resampling=Resampling.nearest)
+    return projected_raster, kwargs
+
+def crop_raster(src, crop_shp):
+    cropped_raster, cropped_meta = es.crop_image(src, crop_shp)
+    array = cropped_raster
+    array[array==0] = np.nan    
+    array[array==9999] = np.nan
+    src.close()
+    return array
+
+def cropRasterByMask(src_projected, crop_shp, cropped_raster_fn):
+    geom = []
+    coord = shapely.geometry.mapping(crop_shp)["features"][0]["geometry"]
+    geom.append(coord)
+
+    out_image, out_transform = rasterio.mask.mask(src_projected, geom, crop=True)
+    out_meta = src_projected.meta
+    out_meta.update({"driver": "GTiff",
+                    "height": out_image.shape[1],
+                    "width": out_image.shape[2],
+                    "transform": out_transform})
+
+    with rasterio.open(os.path.join(cropped_raster_fn), "w", **out_meta) as dest:
+        dest.write(out_image)
+
+def create_image(array, title, output_dir, merge_dir, hours):
+    fig, ax = plt.subplots(figsize = (20, 10))
+    im = ax.imshow(array, cmap='rainbow', vmin=.1, vmax=400)
+    ep.colorbar(im)
+    # title = merge_dir[i].split('\\')[-1]
+    ax.set(title=f"{merge_dir[0]} to {title} Cumulative Precip (mm) {hours} Hours")
+    ax.set_axis_off()
+    img_filename = output_dir + f'\\{title}-accum.png'
+    plt.savefig((img_filename))
+    plt.close()
+
+# Writes out Projected hourly tifs, then writes Cropped hourly Tifs, Then Accumulates to a Single Tif.
+def projectCropAccumulate(input_dir, output_dir, crop_shp, dst_crs):
+    projected_dir = os.path.join(input_dir, 'projected')
+    cropped_dir = os.path.join(input_dir, 'cropped')
+    outputFilename = input_dir.split('\\')[-1]+'-cropped.tif'
+    # Assumes Directory Name is the name of the storm and wanted name of the output files.
+    # I.e: input_dir=r'Z:\LWI_StageIV\Hurricane Cindy 2005' ==> output file will be 'Hurricane Cindy 2005.tif'
+    outputFilename = input_dir.split('\\')[-1]+'-cropped.tif'
+
+    # Check if output, projected, and cropped directories exist.
+    isExist = os.path.exists(output_dir)
+    if not isExist:
+            os.makedirs(output_dir)
+    isExist = os.path.exists(projected_dir)
+    if not isExist:
+            os.makedirs(projected_dir)
+    isExist = os.path.exists(cropped_dir)
+    if not isExist:
+            os.makedirs(cropped_dir)
+    
+    # get all files with extension .01h (the default pattern for uncompressed 1hr precip data from UCAR EOL).
+    # Script is not accounting for potential naming patterns for AK and PR.
+    merge_dir=[]
+    for filename in fnmatch.filter(os.listdir(input_dir),'*.01h'): 
+        merge_dir.append((os.path.join(input_dir, filename)))
+
+    merge_dir.sort()
+
+    map2array=[]
+    for raster in merge_dir:
+        print(f'projecting and cropping {raster}. Then adding to dask array list: map2array')
+        src = rasterio.open(raster)
+        projected_raster, kwargs = projectRaster(raster, src, projected_dir, dst_crs)
+        src_projected = rasterio.open(projected_raster)
+        # array, cropped_meta = crop_raster(src, crop_shp)
+        # Write Cropped Raster to Disk
+        cropped_raster_fn = cropped_dir + '\\' + raster.split("\\")[-1]
+        cropRasterByMask(src_projected, crop_shp, cropped_raster_fn)
+        cropped_src = rasterio.open(cropped_raster_fn)
+        profile = cropped_src.profile
+        array = cropped_src.read(1)
+        array[array==0] = np.nan    
+        array[array==9999] = np.nan
+        # with rasterio.open(cropped_raster_fn, 'w', **kwargs) as dest:
+        #     dest.write(array.squeeze().astype(rasterio.uint8), 1)
+        #     profile = dest.profile
+        # map2array.append(read_raster(raster, band=1, block_size=10))
+        map2array.append(da.from_array(array, chunks=array.shape))
+        src.close()
+        src_projected.close()
+        cropped_src.close()
+
+    ds_stack = da.stack(map2array)
+    print (f'writing Raster to {output_dir}\\{outputFilename}')
+    write_raster(f'{output_dir}\\{outputFilename}', da.nansum(ds_stack,0), **profile)
+
+# Accumulate Uncropped Raw Hourly .01h Grib files from EOL UCAR.
 def accumulate(input_dir, output_dir):
     # Assumes Directory Name is the name of the storm and wanted name of the output files.
     # I.e: input_dir=r'Z:\LWI_StageIV\Hurricane Cindy 2005' ==> output file will be 'Hurricane Cindy 2005.tif'
@@ -86,27 +225,8 @@ def animate(input_dir, output_dir, crop_shp, dst_crs):
     for raster in merge_dir:
         # print(f'adding {raster} to dask array list: map2array')
         src = rasterio.open(raster)
-        transform, width, height = calculate_default_transform(
-            src.crs, dst_crs, src.width, src.height, *src.bounds)
-        kwargs = src.meta.copy()
-        kwargs.update({
-            'crs': dst_crs,
-            'transform': transform,
-            'width': width,
-            'height': height
-        })
-        projected_raster = projected_dir + '\\' + raster.split("\\")[-1]
-        with rasterio.open(projected_raster, 'w', **kwargs) as dst:
-            for i in range(1, src.count + 1):
-                reproject(
-                    source=rasterio.band(src, i),
-                    destination=rasterio.band(dst, i),
-                    src_transform=src.transform,
-                    src_crs=src.crs,
-                    dst_transform=transform,
-                    dst_crs=dst_crs,
-                    resampling=Resampling.nearest)
-        src_projected = rasterio.open(projected_raster)
+        projected_raster = projectRaster(raster, src, projected_dir)
+        src_projected, kwargs = rasterio.open(projected_raster)
         cropped_raster, cropped_meta = es.crop_image(src_projected, crop_shp)
         # array = src.read(1)
         array = cropped_raster
@@ -148,25 +268,6 @@ def animate(input_dir, output_dir, crop_shp, dst_crs):
 # img_dir = os.path.join(output_dir, 'img')
 # stormName = projected_dir.split('\\')[-2]
 # movieFilename = os.path.join(movie_dir, f'{stormName}-accum.gif')
-
-def crop_raster(src, crop_shp):
-    cropped_raster, cropped_meta = es.crop_image(src, crop_shp)
-    array = cropped_raster
-    array[array==0] = np.nan    
-    array[array==9999] = np.nan
-    src.close()
-    return array
-
-def create_image(array, title, output_dir, merge_dir, hours):
-    fig, ax = plt.subplots(figsize = (20, 10))
-    im = ax.imshow(array, cmap='rainbow', vmin=.1, vmax=400)
-    ep.colorbar(im)
-    # title = merge_dir[i].split('\\')[-1]
-    ax.set(title=f"{merge_dir[0]} to {title} Cumulative Precip (mm) {hours} Hours")
-    ax.set_axis_off()
-    img_filename = output_dir + f'\\{title}-accum.png'
-    plt.savefig((img_filename))
-    plt.close()
 
 def animateCumulative(input_dir, movie_dir):
 
@@ -257,6 +358,7 @@ def animateCumulative(input_dir, movie_dir):
 storm_dirs = next( os.walk(stormDir) )[1][1:]
 for storm in storm_dirs:
     inputDir = os.path.join(stormDir, storm)
-    accumulate(inputDir,outputDir)
-    animate(inputDir,outputDir, crop_shp, dst_crs)
-    animateCumulative(inputDir, outputDir)
+    # accumulate(inputDir,outputDir)
+    # animate(inputDir,outputDir, crop_shp, dst_crs)
+    # animateCumulative(inputDir, outputDir)
+    
