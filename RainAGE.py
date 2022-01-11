@@ -8,41 +8,16 @@ import pandas as pd
 import geopandas as gpd
 import shapely
 from rasterio.warp import calculate_default_transform, reproject, Resampling
-import earthpy.spatial as es
 import seaborn as sns
 import matplotlib.pyplot as plt
-import earthpy.plot as ep
 import imageio
 import rasterstats
-# import rasterio.plot
 
-# TODO Implement Cropped Incremental Movie
-
-# fig, ax = plt.subplots(figsize=(15, 15))
-# la = gpd.read_file("Z:\GIS\Louisiana.shp")
-# bbox = la.total_bounds
-# la_extent=bbox[[0,2,1,3]]
-
-# bbox_lwi = shapefile.total_bounds
-# lwi_extent = bbox_lwi[[0,2,1,3]]
-# fn = r"Z:\LWI_StageIV\Hurricane Katrina 2005\projected\ST4.2005082913.01h"
-# title = fn.split('\\')[-1]
-# raster = rasterio.open(fn)
-
-# raster_window = raster.window(*bbox_lwi)
-# array = raster.read(1, window=raster_window)
-# array[array==raster.nodata] = np.nan
-# im = plt.imshow(array, extent=lwi_extent, cmap='rainbow')
-# cb = plt.colorbar(im, shrink=.6)
-# ax.set(title=f"{title} Cumulative Precip (mm)")
-# ax.set_axis_off()
-# la.boundary.plot(ax=plt.gca(), color='darkgrey')
 
 # Takes a directory of Stage IV precip data from UCAR (uncompressed) and accumulates .01h files to a single geotif.
 # An image file of the geotif is also produced to quickly view the result.
 
-# Directory where storms are located.
-# stormDir = r'Z:\LWI_StageIV'
+# Initial Inputs
 stormDir = r"P:\Projects\Office of Community Development\Working Files\Sensitivity Testing Oct2021\ST4_Gap_Analysis\!AmiteRegion"
 outputDir= os.path.join(stormDir, '!Accumulated')
 # Animate Function inputs
@@ -286,13 +261,6 @@ def accumulate(input_dir, output_dir):
     # imageio.mimsave(os.path.join(output_dir, outputFilename), imagesArray, duration=0.1)
     # print ('<----- Done. ----->\n')
 
-# Animate Function inputs
-# output_dir= r'Z:\LWI_StageIV\test\projected\iterate'
-# crop_shp = gpd.read_file(r"Z:\GIS\StageIv Boundary.shp")
-# dst_crs = 'EPSG:4326'
-# img_dir = os.path.join(output_dir, 'img')
-# stormName = projected_dir.split('\\')[-2]
-# movieFilename = os.path.join(movie_dir, f'{stormName}-accum.gif')
 
 # Animates preCropped raster and provides missing data stats.
 # Assumes the projectCropAccumulate function is run first.
@@ -538,10 +506,11 @@ def animateCumulative(input_dir, movie_dir, crop_shp, la_shp):
 
 # Build List of directories to make Cumulative Precip GeoTiffs for. Drop the first dir[1:]: '!Accumulated'
 storm_dirs = next( os.walk(stormDir) )[1][1:]
-# Build Empty Summary Table
-summaryTable = []
+
+# Build Empty Summary Table DataFrame.
 summary_df = pd.DataFrame()
-# summaryTableColumnKeys = ['Event', 'Total Duration (hr)', 'Hours With Missing Data', '%% of Duration With Missing Data' ]
+
+# Main function calls.
 for storm in storm_dirs:
     inputDir = os.path.join(stormDir, storm)
     projectCropAccumulate(inputDir, outputDir, crop_shp, dst_crs)
@@ -550,5 +519,4 @@ for storm in storm_dirs:
     animateCumulative(inputDir, outputDir, crop_shp, la_shp)
 
 # Export Summary Table to CSV.
-# df = pd.DataFrame.from_dict(summaryTable)
 summary_df.to_csv(os.path.join(outputDir, 'SummaryStats.csv'), index=False, header=True)
