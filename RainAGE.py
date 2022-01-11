@@ -43,8 +43,8 @@ import rasterstats
 
 # Directory where storms are located.
 # stormDir = r'Z:\LWI_StageIV'
-stormDir = r'Z:\temp\storms'
-outputDir= r'Z:\temp\storms\!Accumulated'
+stormDir = r"P:\Projects\Office of Community Development\Working Files\Sensitivity Testing Oct2021\ST4_Gap_Analysis\!AmiteRegion"
+outputDir= os.path.join(stormDir, '!Accumulated')
 # Animate Function inputs
 crop_shp = gpd.read_file(r"Z:\GIS\StageIv Boundary.shp")
 la_shp = gpd.read_file("Z:\GIS\Louisiana.shp")
@@ -151,6 +151,8 @@ def projectCropAccumulate(input_dir, output_dir, crop_shp, dst_crs):
     # Script is not accounting for potential naming patterns for AK and PR.
     merge_dir=[]
     for filename in fnmatch.filter(os.listdir(input_dir),'*.01h'): 
+        merge_dir.append((os.path.join(input_dir, filename)))
+    for filename in fnmatch.filter(os.listdir(input_dir),'*.grb2'): 
         merge_dir.append((os.path.join(input_dir, filename)))
 
     merge_dir.sort()
@@ -310,6 +312,8 @@ def animateAndStats(input_dir, output_dir):
     merge_dir=[]
     for filename in fnmatch.filter(os.listdir(cropped_dir),'*.01h'): 
         merge_dir.append((os.path.join(cropped_dir, filename)))
+    for filename in fnmatch.filter(os.listdir(cropped_dir),'*.grb2'): 
+        merge_dir.append((os.path.join(cropped_dir, filename)))
 
     merge_dir.sort()
 
@@ -353,11 +357,21 @@ def animateAndStats(input_dir, output_dir):
     hoursMissingTotal = len(hasMissingHoursIntegerList)
     percentHoursMissing = round(hoursMissingTotal/hoursTotal, 2)* 100
     # summaryTableColumnKeys = ['Event', 'Total Duration (hr)', 'Hours With Missing Data', '%% of Duration With Missing Data' ]
-    statsTable = [  {'Event':storm},
-                    {'Total Duration (hr)': hoursTotal},
-                    {'Hours With Missing Data': hoursMissingTotal},
-                    {'%% of Duration With Missing Data': percentHoursMissing}
-                 ]
+    # statsTable = [  {'Event':storm},
+    #                 {'Total Duration (hr)': hoursTotal},
+    #                 {'Hours With Missing Data': hoursMissingTotal},
+    #                 {'%% of Duration With Missing Data': percentHoursMissing}
+    #              ]
+    # statsTable = [{ 'Event':storm,
+    #                 'Total Duration (hr)': hoursTotal,
+    #                 'Hours With Missing Data': hoursMissingTotal,
+    #                 '%% of Duration With Missing Data': percentHoursMissing
+    # }]
+    stats_df = pd.DataFrame()
+    stats_df['Event'] = [storm]
+    stats_df['Total Duration (hr)'] = [hoursTotal]
+    stats_df['Hours With Missing Data'] = [hoursMissingTotal]
+    stats_df['%% of Duration With Missing Data'] = [percentHoursMissing]
     # Animate
     hour = 0
     for i, array in enumerate(arrayList):
@@ -426,7 +440,7 @@ def animateAndStats(input_dir, output_dir):
     # plt.show()
     plt.savefig(os.path.join(output_dir, statsPlotOutput_fn))
     plt.close()
-    return statsTable
+    return stats_df
 
 # Animates and accumulates through time.
 # Assumuming precropped raster.
@@ -450,6 +464,8 @@ def animateCumulative(input_dir, movie_dir, crop_shp, la_shp):
     # Script is not accounting for potential naming patterns for AK and PR.
     merge_dir=[]
     for filename in fnmatch.filter(os.listdir(cropped_dir),'*.01h'): 
+        merge_dir.append((os.path.join(cropped_dir, filename)))
+    for filename in fnmatch.filter(os.listdir(cropped_dir),'*.grb2'): 
         merge_dir.append((os.path.join(cropped_dir, filename)))
 
     merge_dir.sort()
@@ -524,15 +540,15 @@ def animateCumulative(input_dir, movie_dir, crop_shp, la_shp):
 storm_dirs = next( os.walk(stormDir) )[1][1:]
 # Build Empty Summary Table
 summaryTable = []
+summary_df = pd.DataFrame()
 # summaryTableColumnKeys = ['Event', 'Total Duration (hr)', 'Hours With Missing Data', '%% of Duration With Missing Data' ]
 for storm in storm_dirs:
     inputDir = os.path.join(stormDir, storm)
     projectCropAccumulate(inputDir, outputDir, crop_shp, dst_crs)
-    statsTable = animateAndStats(inputDir, outputDir)
-    summaryTable.append(statsTable)
+    stats_df = animateAndStats(inputDir, outputDir)
+    summary_df = summary_df.append(stats_df)
     animateCumulative(inputDir, outputDir, crop_shp, la_shp)
 
 # Export Summary Table to CSV.
-df = pd.DataFrame.from_dict(summaryTable)
-df.to_csv(os.path.join(outputDir, 'SummaryStats.csv'), index=False, header=True) 
-    
+# df = pd.DataFrame.from_dict(summaryTable)
+summary_df.to_csv(os.path.join(outputDir, 'SummaryStats.csv'), index=False, header=True)
