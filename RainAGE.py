@@ -1,4 +1,5 @@
 import rasterio
+from rasterio import mask as msk
 import dask.array as da
 from dask_rasterio import read_raster, write_raster
 import os
@@ -18,7 +19,7 @@ import rasterstats
 # An image file of the geotif is also produced to quickly view the result.
 
 # Initial Inputs
-stormDir = r"P:\Projects\Office of Community Development\Working Files\Sensitivity Testing Oct2021\ST4_Gap_Analysis\!AmiteRegion"
+stormDir = r"P:\Projects\Office of Community Development\Working Files\Sensitivity Testing Oct2021\ST4_Gap_Analysis\!TheRest"
 outputDir= os.path.join(stormDir, '!Accumulated')
 # Animate Function inputs
 crop_shp = gpd.read_file(r"Z:\GIS\StageIv Boundary.shp")
@@ -62,8 +63,7 @@ def cropRasterByMask(src_projected, crop_shp, cropped_raster_fn):
     geom = []
     coord = shapely.geometry.mapping(crop_shp)["features"][0]["geometry"]
     geom.append(coord)
-
-    out_image, out_transform = rasterio.mask.mask(src_projected, geom, crop=True)
+    out_image, out_transform = msk.mask(src_projected, geom, crop=True)
     out_meta = src_projected.meta
     out_meta.update({"driver": "GTiff",
                     "height": out_image.shape[1],
