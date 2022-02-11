@@ -1,0 +1,11 @@
+[<closed DatasetReader name='P:/Projects/Office of Community Development/Working Files/Sensitivity Testing Oct2021/ST4_Gap_Analysis/NonTropicalStorms/NTS 20050202/ST4.2005011823.01h' mode='r'>, <closed DatasetReader name='P:/Projects/Office of Community Development/Working Files/Sensitivity Testing Oct2021/ST4_Gap_Analysis/NonTropicalStorms/NTS 20070101/ST4.2007011205.01h' mode='r'>, <closed DatasetReader name='P:/Projects/Office of Community Development/Working Files/Sensitivity Testing Oct2021/ST4_Gap_Analysis/NonTropicalStorms/NTS 20090330/ST4.2009032017.01h' mode='r'>, <closed DatasetReader name='P:/Projects/Office of Community Development/Working Files/Sensitivity Testing Oct2021/ST4_Gap_Analysis/NonTropicalStorms/NTS 20091219/ST4.2009120621.01h' mode='r'>, <closed DatasetReader name='P:/Projects/Office of Community Development/Working Files/Sensitivity Testing Oct2021/ST4_Gap_Analysis/NonTropicalStorms/NTS 20100206/ST4.2010022004.01h' mode='r'>, <closed DatasetReader name='P:/Projects/Office of Community Development/Working Files/Sensitivity Testing Oct2021/ST4_Gap_Analysis/NonTropicalStorms/NTS 20120220/ST4.2012021204.01h' mode='r'>, <closed DatasetReader name='P:/Projects/Office of Community Development/Working Files/Sensitivity Testing Oct2021/ST4_Gap_Analysis/NonTropicalStorms/NTS 20120220/ST4.2012021512.01h' mode='r'>, <closed DatasetReader name='P:/Projects/Office of Community Development/Working Files/Sensitivity Testing Oct2021/ST4_Gap_Analysis/NonTropicalStorms/NTS 20121231/ST4.2013010819.01h' mode='r'>, <closed DatasetReader name='P:/Projects/Office of Community Development/Working Files/Sensitivity Testing Oct2021/ST4_Gap_Analysis/NonTropicalStorms/NTS 20160814/ST4.2016082320.01h' mode='r'>, <closed DatasetReader name='P:/Projects/Office of Community Development/Working Files/Sensitivity Testing Oct2021/ST4_Gap_Analysis/NonTropicalStorms/NTS 20170122/ST4.2017011409.01h' mode='r'>, <closed DatasetReader name='P:/Projects/Office of Community Development/Working Files/Sensitivity Testing Oct2021/ST4_Gap_Analysis/NonTropicalStorms/NTS 20171024/ST4.2017103109.01h' mode='r'>]
+
+2007011205
+2009032017
+2009120621
+2010022004
+2012021204  - fixed from overlapping event that didnt show up in list, this reveals an issue with unzipping or moving/copying the data
+2012021512
+2013010819 - fixed, i think...
+2016082320
+2017103109

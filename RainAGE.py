@@ -19,11 +19,13 @@ import rasterstats
 # An image file of the geotif is also produced to quickly view the result.
 
 # Initial Inputs
-stormDir = r"P:\Projects\Office of Community Development\Working Files\Sensitivity Testing Oct2021\ST4_Gap_Analysis\!TheRest"
-outputDir= os.path.join(stormDir, '!Accumulated')
-# Animate Function inputs
-crop_shp = gpd.read_file(r"Z:\GIS\StageIv Boundary.shp")
-la_shp = gpd.read_file("Z:\GIS\Louisiana.shp")
+stormDir = r"P:\Projects\Office of Community Development\Working Files\Sensitivity Testing Oct2021\ST4_Gap_Analysis\NonTropicalStorms"
+outputDir= os.path.join(stormDir, '!Accumulated-Amite')
+# Shape that will be used to crop the raster.
+crop_shp = gpd.read_file(r".\Amite\Amite_Basin_bbox.geojson")
+# Shape that will be the Basin Map. Extents Must be within the crop_shp.
+la_shp = gpd.read_file(r".\Amite\Amite_Basin_Outline.geojson")
+# la_shp = gpd.read_file("Z:\GIS\Louisiana.shp")
 dst_crs = 'EPSG:4326'
 
 def projectRaster(raster_fn, raster_src, projected_dir, dst_crs):
@@ -89,8 +91,8 @@ def create_image(array, title, img_dir, outputFilename, crop_shp, la_shp, bigMax
     img_filename = os.path.join(img_dir, outputFilename)
     fig, ax = plt.subplots(figsize=(20, 15))
     
-    bbox = la_shp.total_bounds
-    la_extent=bbox[[0,2,1,3]]
+    # bbox = la_shp.total_bounds
+    # la_extent=bbox[[0,2,1,3]]
     bbox_lwi = crop_shp.total_bounds
     lwi_extent = bbox_lwi[[0,2,1,3]]
     array[array==9999] = np.nan
@@ -103,7 +105,7 @@ def create_image(array, title, img_dir, outputFilename, crop_shp, la_shp, bigMax
     plt.close()
 
 # Writes out Projected hourly tifs, then writes Cropped hourly Tifs, Then Accumulates to a Single Tif.
-def projectCropAccumulate(input_dir, output_dir, crop_shp, dst_crs):
+def projectCrop(input_dir, output_dir, crop_shp, dst_crs):
     projected_dir = os.path.join(input_dir, 'projected')
     cropped_dir = os.path.join(input_dir, 'cropped')
     outputFilename = input_dir.split('\\')[-1]+'-cropped.tif'
@@ -132,6 +134,24 @@ def projectCropAccumulate(input_dir, output_dir, crop_shp, dst_crs):
 
     merge_dir.sort()
 
+    # Get Shape of first array
+    raster = merge_dir[0]
+    src = rasterio.open(raster)
+    projected_raster, kwargs = projectRaster(raster, src, projected_dir, dst_crs)
+    src_projected = rasterio.open(projected_raster)
+    # Write Cropped Raster to Disk
+    cropped_raster_fn = cropped_dir + '\\' + raster.split("\\")[-1]
+    cropRasterByMask(src_projected, crop_shp, cropped_raster_fn)
+    cropped_src = rasterio.open(cropped_raster_fn)
+    profile = cropped_src.profile
+    array = cropped_src.read(1)
+    array[array==0] = np.nan    
+    array[array==9999] = np.nan
+    firstArrayShape = array.shape
+    src.close()
+    src_projected.close()
+    cropped_src.close()
+
     map2array=[]
     for raster in merge_dir:
         print(f'projecting and cropping {raster}. Then adding to dask array list: map2array')
@@ -147,18 +167,24 @@ def projectCropAccumulate(input_dir, output_dir, crop_shp, dst_crs):
         array = cropped_src.read(1)
         array[array==0] = np.nan    
         array[array==9999] = np.nan
+        # Check if Array Shape equal doesnt equal firstArrayShape and reshape it.
+        if not (array.shape == firstArrayShape):
+            #reshape
+            array.resize(firstArrayShape, refcheck=False) 
+            array[array==0] = np.nan
+
         # with rasterio.open(cropped_raster_fn, 'w', **kwargs) as dest:
         #     dest.write(array.squeeze().astype(rasterio.uint8), 1)
         #     profile = dest.profile
         # map2array.append(read_raster(raster, band=1, block_size=10))
-        map2array.append(da.from_array(array, chunks=array.shape))
+        # map2array.append(da.from_array(array, chunks=500))
         src.close()
         src_projected.close()
         cropped_src.close()
 
-    ds_stack = da.stack(map2array)
-    print (f'writing Raster to {output_dir}\\{outputFilename}')
-    write_raster(f'{output_dir}\\{outputFilename}', da.nansum(ds_stack,0), **profile)
+    # ds_stack = da.stack(map2array)
+    # print (f'writing Raster to {output_dir}\\{outputFilename}')
+    # write_raster(f'{output_dir}\\{outputFilename}', da.nansum(ds_stack,0), **profile)
 
 # Accumulate Uncropped Raw Hourly .01h Grib files from EOL UCAR.
 def accumulate(input_dir, output_dir):
@@ -195,76 +221,9 @@ def accumulate(input_dir, output_dir):
     print (f'writing Raster to {output_dir}\\{outputFilename}.tif')
     write_raster(f'{output_dir}\\{outputFilename}.tif', da.nansum(ds_stack,0), **profile)
 
-# Deprecated Function use animateAndStats
-# def animate(input_dir, output_dir, crop_shp, dst_crs):
-    # outputFilename = input_dir.split('\\')[-1]+'.gif'
-    # img_dir = os.path.join(input_dir, 'img')
-    # projected_dir = os.path.join(input_dir, 'projected')
-    # # movieFilename = os.path.join(img_dir, outputFilename)
-
-    # sns.set_style("white")
-    # sns.set(font_scale=1.5)
-
-    # # Check whether the image and projection paths exists.
-    # # Create a new directory if not isExists.
-    # isExist_img = os.path.exists(img_dir)
-    # if not isExist_img:
-    #     os.makedirs(img_dir)
-    # isExist_proj = os.path.exists(projected_dir)
-    # if not isExist_proj:
-    #     os.makedirs(projected_dir)
-
-    # merge_dir=[]
-    # for filename in fnmatch.filter(os.listdir(input_dir),'*.01h'): 
-    #     merge_dir.append((os.path.join(input_dir, filename)))
-
-    # merge_dir.sort()
-
-    # arrayList = []
-    # print (f'\nwriting projected Raster files to {dst_crs} {projected_dir}')
-    # for raster in merge_dir:
-    #     # print(f'adding {raster} to dask array list: map2array')
-    #     src = rasterio.open(raster)
-    #     projected_raster = projectRaster(raster, src, projected_dir, dst_crs)
-    #     src_projected, kwargs = rasterio.open(projected_raster)
-    #     cropped_raster, cropped_meta = es.crop_image(src_projected, crop_shp)
-    #     # array = src.read(1)
-    #     array = cropped_raster
-    #     array[array==0] = np.nan    
-    #     array[array==9999] = np.nan
-    #     arrayList.append(array)
-    #     src.close()
-    #     src_projected.close()
-    # print (f'Writing plot images to {img_dir}')
-    # for i, array in enumerate(arrayList):
-    #     # print (f'writing projected Raster file {projected_raster}')
-    #     fig, ax = plt.subplots(figsize = (20, 10))
-    #     im = ax.imshow(array.squeeze(), cmap='rainbow')
-    #     ep.colorbar(im)
-    #     title = merge_dir[i].split('\\')[-1]
-    #     ax.set(title=f"{title} Hourly Precip (mm)")
-    #     ax.set_axis_off()
-    #     img_filename = img_dir + f'\\{title}.png'
-    #     plt.savefig((img_filename))
-    #     plt.close()
-
-    # print (f'Creating gif movie: {outputFilename}')
-    # imgList=[]
-    # for img_file in fnmatch.filter(os.listdir(img_dir),'*.png'): 
-    #     imgList.append((os.path.join(img_dir, img_file)))
-    # imgList.sort()
-
-    # imagesArray = []
-    # for imageFile in imgList:
-    #     # print(f'adding {imageFile} to imagesArray.')
-    #     imagesArray.append(imageio.imread(imageFile))
-    # imageio.mimsave(os.path.join(output_dir, outputFilename), imagesArray, duration=0.1)
-    # print ('<----- Done. ----->\n')
-
-
 # Animates preCropped raster and provides missing data stats.
-# Assumes the projectCropAccumulate function is run first.
-def animateAndStats(input_dir, output_dir):
+# Assumes the projectCrop function is run first.
+def animateAndStats(input_dir, output_dir, la_shp, crop_shp):
     cropped_dir = os.path.join(input_dir, 'cropped')
     img_dir = os.path.join(cropped_dir, 'img')
     outputFilename = input_dir.split('\\')[-1]+'-Inc-Cropped.gif'
@@ -297,7 +256,7 @@ def animateAndStats(input_dir, output_dir):
             arrayList.append(array)
             
             # Get Rasterstats
-            stats = rasterstats.zonal_stats(r"Z:\GIS\StageIv Boundary.shp", raster, stats=['min', 'max','mean', 'count', 'nodata'])
+            stats = rasterstats.zonal_stats(crop_shp, raster, stats=['min', 'max','mean', 'count', 'nodata'])
             percentMissing = stats[0]['nodata']/(stats[0]['count'] + stats[0]['nodata'])
             percentMissing = round(percentMissing * 100, 2)
             percentMissing
@@ -315,7 +274,7 @@ def animateAndStats(input_dir, output_dir):
     for raster in rasterStats:
         hour +=1
         max = rasterStats[raster][0]['max']
-        if (max > bigMax):
+        if max is not None and (max > bigMax):
             bigMax = max
         # If over 3% of raster is Nan, count it as having missing data.
         if (rasterStats[raster][0]['percentMissing'] > 3.0):
@@ -346,11 +305,10 @@ def animateAndStats(input_dir, output_dir):
         hour += 1
         title = merge_dir[i].split('\\')[-1]
         img_filename = img_dir + f'\\{title}.png'
-        crop_shp = gpd.read_file(r"Z:\GIS\StageIv Boundary.shp")
+        # crop_shp = gpd.read_file(r"Z:\GIS\StageIv Boundary.shp")
         fig, ax = plt.subplots(figsize=(20, 15))
-        la = gpd.read_file("Z:\GIS\Louisiana.shp")
-        bbox = la.total_bounds
-        la_extent=bbox[[0,2,1,3]]
+        # bbox = la_shp.total_bounds
+        # la_extent=bbox[[0,2,1,3]]
         bbox_lwi = crop_shp.total_bounds
         lwi_extent = bbox_lwi[[0,2,1,3]]
         array[array==9999] = np.nan
@@ -358,7 +316,7 @@ def animateAndStats(input_dir, output_dir):
         cb = plt.colorbar(im, shrink=.6)
         ax.set(title=f"{storm}\n{title} Incremental Precip (mm), Total Duration (hr): {hoursTotal} \nHour:{hour}, %Hours with Missing Data: {percentHoursMissing}%")
         ax.set_axis_off()
-        la.boundary.plot(ax=plt.gca(), color='darkgrey')
+        la_shp.boundary.plot(ax=plt.gca(), color='darkgrey')
         plt.savefig((img_filename))
         plt.close()
 
@@ -438,9 +396,22 @@ def animateCumulative(input_dir, movie_dir, crop_shp, la_shp):
 
     merge_dir.sort()
 
+    # Get first raster profile
     with rasterio.open(merge_dir[0]) as src:
             profile=src.profile
+    
+    # Get first raster file name
     firstRasterTitle = str(merge_dir[0].split('\\')[-1])
+    
+    # Get Shape of first array
+    cropped_raster_fn = cropped_dir + '\\' + firstRasterTitle
+    cropped_src = rasterio.open(cropped_raster_fn)
+    profile = cropped_src.profile
+    array = cropped_src.read(1) 
+    array[array==9999] = np.nan
+    firstArrayShape = array.shape
+    cropped_src.close()
+
     hours = 0
     map2array=[]
     for raster in merge_dir:
@@ -453,6 +424,11 @@ def animateCumulative(input_dir, movie_dir, crop_shp, la_shp):
         # array = crop_raster(src, crop_shp)
         # array[array==0] = np.nan    
         array[array==9999] = np.nan
+        # Check if Array Shape equal doesnt equal firstArrayShape and reshape it.
+        if not (array.shape == firstArrayShape):
+            #reshape
+            array.resize(firstArrayShape, refcheck=False) 
+            # array[array==0] = np.nan
         map2array.append(da.from_array(array, chunks=array.shape))
         if len(map2array) == 1:
             # First array element, dont accumulate.
@@ -513,10 +489,10 @@ summary_df = pd.DataFrame()
 # Main function calls.
 for storm in storm_dirs:
     inputDir = os.path.join(stormDir, storm)
-    projectCropAccumulate(inputDir, outputDir, crop_shp, dst_crs)
-    stats_df = animateAndStats(inputDir, outputDir)
+    projectCrop(inputDir, outputDir, crop_shp, dst_crs)
+    stats_df = animateAndStats(inputDir, outputDir, la_shp, crop_shp)
     summary_df = summary_df.append(stats_df)
-    animateCumulative(inputDir, outputDir, crop_shp, la_shp)
+    # animateCumulative(inputDir, outputDir, crop_shp, la_shp)
 
 # Export Summary Table to CSV.
 summary_df.to_csv(os.path.join(outputDir, 'SummaryStats.csv'), index=False, header=True)
