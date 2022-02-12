@@ -154,7 +154,7 @@ def projectCrop(input_dir, output_dir, crop_shp, dst_crs):
 
     map2array=[]
     for raster in merge_dir:
-        print(f'projecting and cropping {raster}. Then adding to dask array list: map2array')
+        # print(f'projecting and cropping {raster}. Then adding to dask array list: map2array')
         src = rasterio.open(raster)
         projected_raster, kwargs = projectRaster(raster, src, projected_dir, dst_crs)
         src_projected = rasterio.open(projected_raster)
@@ -317,7 +317,7 @@ def animateAndStats(input_dir, output_dir, la_shp, crop_shp):
         ax.set(title=f"{storm}\n{title} Incremental Precip (mm), Total Duration (hr): {hoursTotal} \nHour:{hour}, %Hours with Missing Data: {percentHoursMissing}%")
         ax.set_axis_off()
         la_shp.boundary.plot(ax=plt.gca(), color='darkgrey')
-        plt.savefig((img_filename))
+        plt.savefig(img_filename)
         plt.close()
 
     print (f'Creating gif movie: {outputFilename}')
@@ -487,12 +487,21 @@ storm_dirs = next( os.walk(stormDir) )[1][1:]
 summary_df = pd.DataFrame()
 
 # Main function calls.
+# for storm in storm_dirs:
+#     print (storm)
+#     inputDir = os.path.join(stormDir, storm)
+#     projectCrop(inputDir, outputDir, crop_shp, dst_crs)
+    # stats_df = animateAndStats(inputDir, outputDir, la_shp, crop_shp)
+    # summary_df = summary_df.append(stats_df)
+    # animateCumulative(inputDir, outputDir, crop_shp, la_shp)for storm in storm_dirs:
+
 for storm in storm_dirs:
+    print (f'stats for {storm}')
     inputDir = os.path.join(stormDir, storm)
-    projectCrop(inputDir, outputDir, crop_shp, dst_crs)
+    # projectCrop(inputDir, outputDir, crop_shp, dst_crs)
     stats_df = animateAndStats(inputDir, outputDir, la_shp, crop_shp)
     summary_df = summary_df.append(stats_df)
+    stats_df.to_csv(os.path.join(outputDir, 'SummaryStatsAppendable.csv'), mode='a',index=False, header=True)
     # animateCumulative(inputDir, outputDir, crop_shp, la_shp)
-
 # Export Summary Table to CSV.
 summary_df.to_csv(os.path.join(outputDir, 'SummaryStats.csv'), index=False, header=True)
