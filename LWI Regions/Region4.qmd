@@ -1,0 +1,54 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
+<qgis version="3.22.1-Bia?owie?a">
+  <identifier>Provisional_FeatureToPolygon4</identifier>
+  <parentidentifier></parentidentifier>
+  <language>ENG</language>
+  <type>dataset</type>
+  <title>Provisional_FeatureToPolygon4</title>
+  <abstract>This data set is a complete digital hydrologic unit boundary layer to the Subbasin (8-digit) 4th level for the entire United States. This data set consists of geo-referenced digital data and associated attributes created in accordance with the "Federal Guidelines, Requirements, and Procedures for the National Watershed Boundary Dataset; Chapter 3 of Section A, Federal Standards, Book 11, Collection and Delineation of Spatial Data; Techniques and Methods 11-A3" (04/01/2009). http://www.ncgc.nrcs.usda.gov/products/datasets/watershed/index.html . Polygons are attributed with hydrologic unit codes for 1st(Region), 2nd(Sub-Region), 3rd(Basin), and 4th(Sub-Basin) Hydrologic Unit Level codes, names, Sub-Basin acres and square miles.
+
+The Basin and Sub-basin hydrologic unit boundaries provide a uniquely identified and uniform method of subdividing large drainage areas. The largest sized 4th level sub-basins are useful for numerous application programs supported by a variety of local, State, and Federal Agencies. This data set is intended to be used as a tool for water-resource management and planning activities, particularly for site-specific and localized studies requiring a level of detail provided by large-scale map information.</abstract>
+  <keywords vocabulary="gmd:topicCategory">
+    <keyword>HUC</keyword>
+  </keywords>
+  <contact>
+    <contactAddress>
+      <type>mailing address</type>
+      <address>501 W. Felix St., Bldg. 23</address>
+      <city>Fort Worth</city>
+      <administrativearea>Texas</administrativearea>
+      <postalcode>76115</postalcode>
+      <country></country>
+    </contactAddress>
+    <name>U.S. Department of Agriculture, Natural Resources Conservation Service, National Cartography and Geospatial Center</name>
+    <organization>U.S. Department of Agriculture, Natural Resources Conservation Service, National Cartography and Geospatial Center</organization>
+    <position></position>
+    <voice>(817) 509-3366</voice>
+    <fax></fax>
+    <email>Steven.Nechero@ftw.usda.gov</email>
+    <role>Point of contact</role>
+  </contact>
+  <links>
+    <link url="withheld" description="" type="" size="" format="" name="Feature Class" mimeType=""/>
+  </links>
+  <fees></fees>
+  <constraints type="Access">None</constraints>
+  <rights>The distributor shall not be held liable for improper or incorrect use of this data, based on the description of appropriate/inappropriate uses described in this metadata document. It is strongly recommended that this data is directly acquired from the distributor and not indirectly through other sources which may have changed the data in some way. These data should not be used at scales greater than 1:24,000 for the purpose of identifying hydrographic watershed boundary feature locations in the U.S.A. The NRCS should be acknowledged as the data source in products derived from these data. The Watershed Boundary Dataset is public information and may be interpreted by all organizations, agencies, units of government, or others based on needs; however, they are responsible for the appropriate application of the data. Federal, State, or local regulatory bodies are not to reassign to the Natural Resources Conservation Service any authority for the decisions they make. The Natural Resources Conservation Service will not perform any evaluations of these maps or purposes related solely to State or local regulatory programs. Photographic or digital enlargement of these maps to scales greater than that at which they were originally delineated can result in misrepresentation of the data. If enlarged, the maps will not include the fine detail that would be appropriate for mapping at the small scale. Digital data files are periodically updated. Files are dated, and users are responsible for obtaining the latest version of the data from the source distributor.</rights>
+  <encoding></encoding>
+  <crs>
+    <spatialrefsys>
+      <wkt>PROJCRS["NAD83 / UTM zone 15N",BASEGEOGCRS["NAD83",DATUM["North American Datum 1983",ELLIPSOID["GRS 1980",6378137,298.257222101,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4269]],CONVERSION["UTM zone 15N",METHOD["Transverse Mercator",ID["EPSG",9807]],PARAMETER["Latitude of natural origin",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8801]],PARAMETER["Longitude of natural origin",-93,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8802]],PARAMETER["Scale factor at natural origin",0.9996,SCALEUNIT["unity",1],ID["EPSG",8805]],PARAMETER["False easting",500000,LENGTHUNIT["metre",1],ID["EPSG",8806]],PARAMETER["False northing",0,LENGTHUNIT["metre",1],ID["EPSG",8807]]],CS[Cartesian,2],AXIS["(E)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["(N)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Engineering survey, topographic mapping."],AREA["North America - between 96°W and 90°W - onshore and offshore. Canada - Manitoba; Nunavut; Ontario. United States (USA) - Arkansas; Illinois; Iowa; Kansas; Louisiana; Michigan; Minnesota; Mississippi; Missouri; Nebraska; Oklahoma; Tennessee; Texas; Wisconsin."],BBOX[25.61,-96,84,-90]],ID["EPSG",26915]]</wkt>
+      <proj4>+proj=utm +zone=15 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>
+      <srsid>2292</srsid>
+      <srid>26915</srid>
+      <authid>EPSG:26915</authid>
+      <description>NAD83 / UTM zone 15N</description>
+      <projectionacronym>utm</projectionacronym>
+      <ellipsoidacronym>EPSG:7019</ellipsoidacronym>
+      <geographicflag>false</geographicflag>
+    </spatialrefsys>
+  </crs>
+  <extent>
+    <spatial miny="28.81230800000000158" crs="EPSG:26915" dimensions="2" maxx="-87.76509900000000641" maxy="34.98573499999999825" maxz="0" minx="-96.47289299999999912" minz="0"/>
+  </extent>
+</qgis>

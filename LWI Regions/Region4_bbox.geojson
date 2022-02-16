@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "Region4_bbox",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "FID": 5, "OBJECTID": 114, "Shape_Leng": 1209162.1448299999, "Watershed_": 4, "SHAPE_Length": 1413474.7569118899, "SHAPE_Area": 18075425793.799999, "width": 1.444753, "height": 2.734219, "area": 3.950272, "perimeter": 8.357944 }, "geometry": { "type": "Polygon", "coordinates": [ [ [ -94.043065801847646, 29.595131325684296 ], [ -92.598312349833847, 29.595131325684296 ], [ -92.598312349833847, 32.329350004566102 ], [ -94.043065801847646, 32.329350004566102 ], [ -94.043065801847646, 29.595131325684296 ] ] ] } }
+]
+}

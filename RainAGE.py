@@ -19,12 +19,12 @@ import rasterstats
 # An image file of the geotif is also produced to quickly view the result.
 
 # Initial Inputs
-stormDir = r"P:\Projects\Office of Community Development\Working Files\Sensitivity Testing Oct2021\ST4_Gap_Analysis\NonTropicalStorms"
-outputDir= os.path.join(stormDir, '!Accumulated-Amite')
+stormDir = r"P:\Projects\Office of Community Development\Working Files\Sensitivity Testing Oct2021\ST4_Gap_Analysis\Region7"
+outputDir= os.path.join(stormDir, '!Accumulated')
 # Shape that will be used to crop the raster.
-crop_shp = gpd.read_file(r".\Amite\Amite_Basin_bbox.geojson")
+crop_shp = gpd.read_file(r".\LWI Regions\Region7_bbox.geojson")
 # Shape that will be the Basin Map. Extents Must be within the crop_shp.
-la_shp = gpd.read_file(r".\Amite\Amite_Basin_Outline.geojson")
+la_shp = gpd.read_file(r".\LWI Regions\Region7.geojson")
 # la_shp = gpd.read_file("Z:\GIS\Louisiana.shp")
 dst_crs = 'EPSG:4326'
 
@@ -270,6 +270,7 @@ def animateAndStats(input_dir, output_dir, la_shp, crop_shp):
     hasMissingHoursIntegerList = []
     percentAreaMissingList = []
     bigMax = 0
+    bigMaxHour = 0
     hour = 0
     for raster in rasterStats:
         hour +=1
@@ -487,13 +488,11 @@ storm_dirs = next( os.walk(stormDir) )[1][1:]
 summary_df = pd.DataFrame()
 
 # Main function calls.
-# for storm in storm_dirs:
-#     print (storm)
-#     inputDir = os.path.join(stormDir, storm)
-#     projectCrop(inputDir, outputDir, crop_shp, dst_crs)
-    # stats_df = animateAndStats(inputDir, outputDir, la_shp, crop_shp)
-    # summary_df = summary_df.append(stats_df)
-    # animateCumulative(inputDir, outputDir, crop_shp, la_shp)for storm in storm_dirs:
+for storm in storm_dirs:
+    print (storm)
+    inputDir = os.path.join(stormDir, storm)
+    projectCrop(inputDir, outputDir, crop_shp, dst_crs)
+    
 
 for storm in storm_dirs:
     print (f'stats for {storm}')
@@ -501,7 +500,8 @@ for storm in storm_dirs:
     # projectCrop(inputDir, outputDir, crop_shp, dst_crs)
     stats_df = animateAndStats(inputDir, outputDir, la_shp, crop_shp)
     summary_df = summary_df.append(stats_df)
-    stats_df.to_csv(os.path.join(outputDir, 'SummaryStatsAppendable.csv'), mode='a',index=False, header=True)
+    stats_df.to_csv(os.path.join(outputDir, 'SummaryStatsAppendable.csv'), mode='a',index=False, header=False)
     # animateCumulative(inputDir, outputDir, crop_shp, la_shp)
+
 # Export Summary Table to CSV.
 summary_df.to_csv(os.path.join(outputDir, 'SummaryStats.csv'), index=False, header=True)
